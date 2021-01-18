@@ -10,7 +10,8 @@ provider "openstack" {
     tenant_id = var.mcs_project_id
 
     # The indicator of the location of users.
-    user_domain_id = "users"
+    user_domain_name = "users"
+    project_domain_id = "7aa9aefba7ab465cb122052125e77c8f"
 
     # API endpoint
     # Terraform will use this address to access the MCS api.

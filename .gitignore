@@ -1,3 +1,6 @@
 /.terraform
 /.terraform.lock.hcl
 /credentials.sh
+/mcs-home.pem
+/terraform.tfstate
+/terraform.tfstate.backup

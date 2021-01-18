@@ -87,7 +87,7 @@ resource "openstack_compute_instance_v2" "instance" {
       "sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo",
       "sudo yum install -y docker-ce docker-ce-cli containerd.io",
       "sudo usermod -aG docker centos",
-      "sudo newgrp docker",
+      "newgrp docker",
       "sudo echo 'net.ipv4.ip_forward = 1' >> /etc/sysctl.conf",
       "sudo /sbin/sysctl -p",
       "sudo systemctl restart network",

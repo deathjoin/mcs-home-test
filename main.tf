@@ -86,7 +86,9 @@ resource "openstack_compute_instance_v2" "instance" {
       "sudo systemctl restart network",
       "sudo systemctl enable docker",
       "sudo systemctl start docker",
-      "mkdir -p ~/gitlab/{data,logs,config,postgresql}"
+      "sudo curl -L \"https://github.com/docker/compose/releases/download/1.27.4/docker-compose-$(uname -s)-$(uname -m)\" -o /usr/local/bin/docker-compose",
+      "sudo chmod +x /usr/local/bin/docker-compose",
+      "mkdir -p ~/gitlab/{data,logs,config,postgresql}",
     ]
   }
 

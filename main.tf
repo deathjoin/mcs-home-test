@@ -30,7 +30,7 @@ resource "openstack_blockstorage_volume_v2" "volume" {
   name = "storage"
   volume_type = "dp1"
   
-  size = "20"
+  size = "40"
 
   # CentOS-7.7-202003
   image_id = "4525415d-df00-4f32-a434-b8469953fe3e"
@@ -43,7 +43,7 @@ resource "openstack_compute_instance_v2" "instance" {
   # Имя и uuid образа с ОС
   image_name = "CentOS-7.7-202003"
   image_id = "4525415d-df00-4f32-a434-b8469953fe3e"
-  flavor_name = "Basic-1-2-20"
+  flavor_name = "Standard-4-16-40"
 
   key_pair = openstack_compute_keypair_v2.ssh.name
 
@@ -67,33 +67,39 @@ resource "openstack_compute_instance_v2" "instance" {
 
   provisioner "remote-exec" {
     connection {
-      # Данный адрес можно получить из compute node при создании ВМ
-      # Сам адрес можно получить из ext-net
       host = openstack_compute_instance_v2.instance.access_ip_v4
 
-      # Пользователь, от имени которого запускается SSH соединение
       user = "centos"
 
-      # Приватный ключ, который будет использован
-      # В этом примере он лежит в одной директории с main.tf
       private_key = file("${path.module}/mcs-home.pem")
     }
 
-    # cli команды, которые необходимо использовать
-    # Не стоит забывать, что это array type и необходимо вводить full text
     inline = [
 #      "sudo yum update -y",
       "sudo yum install -y yum-utils",
       "sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo",
       "sudo yum install -y docker-ce docker-ce-cli containerd.io",
       "sudo usermod -aG docker centos",
-      "newgrp docker",
+#      "exec sg docker newgrp `id -gn`",
       "sudo echo 'net.ipv4.ip_forward = 1' >> /etc/sysctl.conf",
       "sudo /sbin/sysctl -p",
       "sudo systemctl restart network",
       "sudo systemctl enable docker",
       "sudo systemctl start docker",
+      "mkdir -p ~/gitlab/{data,logs,config,postgresql}"
     ]
+  }
+
+  provisioner "file" {
+    connection {
+      host = openstack_compute_instance_v2.instance.access_ip_v4
+
+      user = "centos"
+
+      private_key = file("${path.module}/mcs-home.pem")
+    }
+    source      = "docker-compose.yml"
+    destination = "~/gitlab"
   }
 }
 

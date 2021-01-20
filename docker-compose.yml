@@ -1,0 +1,33 @@
+version: '3.4'
+services:
+  postgresql:
+    image: postgres:13.1
+    volumes:
+    - $GITLAB_HOME/postgresql:/var/lib/postgresql
+    - $GITLAB_HOME/initsql:/docker-entrypoint-initdb.d
+    environment:
+    - POSTGRES_USER=gitlab
+    - POSTGRES_PASSWORD=gitlab
+    - POSTGRES_DB=gitlabhq_production
+  gitlab:
+    image: gitlab/gitlab-ee:latest
+    depends_on:
+    - postgresql
+    ports:
+    - "37.139.42.249:80:80"
+    - "37.139.42.249:2202:22"
+    - "37.139.42.249:443:443"
+    volumes:
+    - $GITLAB_HOME/config:/etc/gitlab
+    - $GITLAB_HOME/logs:/var/log/gitlab
+    - $GITLAB_HOME/data:/var/opt/gitlab
+    environment:
+      GITLAB_OMNIBUS_CONFIG: |
+        external_url 'http://gitlab.example.com'
+        postgresql['enable'] = false
+        gitlab_rails['db_username'] = "gitlab"
+        gitlab_rails['db_password'] = "gitlab"
+        gitlab_rails['db_host'] = "postgresql"
+        gitlab_rails['db_database'] = "gitlabhq_production"
+        gitlab_rails['db_adapter'] = 'postgresql'
+        gitlab_rails['db_encoding'] = 'utf8'

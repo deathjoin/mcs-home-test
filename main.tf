@@ -30,7 +30,7 @@ resource "openstack_blockstorage_volume_v2" "volume" {
   name = "storage"
   volume_type = "dp1"
   
-  size = "40"
+  size = "50"
 
   # CentOS-7.7-202003
   image_id = "4525415d-df00-4f32-a434-b8469953fe3e"
@@ -43,7 +43,7 @@ resource "openstack_compute_instance_v2" "instance" {
   # Имя и uuid образа с ОС
   image_name = "CentOS-7.7-202003"
   image_id = "4525415d-df00-4f32-a434-b8469953fe3e"
-  flavor_name = "Standard-4-16-40"
+  flavor_name = "Standard-4-16-50"
 
   key_pair = openstack_compute_keypair_v2.ssh.name
 

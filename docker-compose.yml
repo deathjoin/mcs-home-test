@@ -11,6 +11,8 @@ services:
     - $GITLAB_HOME/registry:/var/lib/registry
     ports: 
     - "37.139.42.249:5000:5000"
+  redis:
+    image: redis:latest
   postgresql:
     image: postgres:13.1
     volumes:
@@ -25,6 +27,7 @@ services:
     depends_on:
     - postgresql
     - registry
+    - redis
     ports:
     - "37.139.42.249:80:80"
     - "37.139.42.249:2202:22"
@@ -47,3 +50,6 @@ services:
         gitlab_rails['db_database'] = "gitlabhq_production"
         gitlab_rails['db_adapter'] = 'postgresql'
         gitlab_rails['db_encoding'] = 'utf8'
+        redis['enable'] = false
+        gitlab_rails['redis_host'] = 'redis'
+        gitlab_rails['redis_port'] = '6379'

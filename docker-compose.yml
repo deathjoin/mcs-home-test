@@ -1,5 +1,16 @@
 version: '3.4'
 services:
+  registry:
+    image: registry:2
+    environment: 
+    - REGISTRY_HTTP_ADDR=0.0.0.0:5000
+    - REGISTRY_HTTP_TLS_CERTIFICATE=/certs/domain.crt
+    - REGISTRY_HTTP_TLS_KEY=/certs/domain.key
+    volumes: 
+    - $GITLAB_HOME/certs:/certs
+    - $GITLAB_HOME/registry:/var/lib/registry
+    ports: 
+    - "37.139.42.249:5000:5000"
   postgresql:
     image: postgres:13.1
     volumes:
@@ -13,6 +24,7 @@ services:
     image: gitlab/gitlab-ee:latest
     depends_on:
     - postgresql
+    - registry
     ports:
     - "37.139.42.249:80:80"
     - "37.139.42.249:2202:22"
@@ -21,9 +33,13 @@ services:
     - $GITLAB_HOME/config:/etc/gitlab
     - $GITLAB_HOME/logs:/var/log/gitlab
     - $GITLAB_HOME/data:/var/opt/gitlab
+    - $GITLAB_HOME/certs:/certs
     environment:
       GITLAB_OMNIBUS_CONFIG: |
         external_url 'http://gitlab.example.com'
+        registry_external_url 'https://registry:5000'
+        registry_nginx['ssl_certificate'] = '/certs/domain.crt'
+        registry_nginx['ssl_certificate_key'] = '/certs/domain.key'
         postgresql['enable'] = false
         gitlab_rails['db_username'] = "gitlab"
         gitlab_rails['db_password'] = "gitlab"

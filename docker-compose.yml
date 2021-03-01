@@ -53,3 +53,4 @@ services:
         redis['enable'] = false
         gitlab_rails['redis_host'] = 'redis'
         gitlab_rails['redis_port'] = '6379'
+        gitlab_rails['gitlab_shell_ssh_port'] = 2202
